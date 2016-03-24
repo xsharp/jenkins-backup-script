@@ -40,7 +40,7 @@ if [ -d "$JENKINS_HOME/secrets/" ] ; then
 fi
 
 if [ -d "$JENKINS_HOME/nodes/" ] ; then
-  cp -R "$JENKINS_HOME/nodes/"* "$ARC_DIR/nodes"
+  cp -R "$JENKINS_HOME/nodes/". "$ARC_DIR/nodes"
 fi
 
 if [ -d "$JENKINS_HOME/jobs/" ] ; then
