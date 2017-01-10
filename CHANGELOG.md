@@ -1,6 +1,37 @@
 # Changelog
 ## master
-[full changelog](https://github.com/sue445/jenkins-backup-script/compare/0.1.3...master)
+[full changelog](https://github.com/sue445/jenkins-backup-script/compare/0.1.8...master)
+
+## 0.1.8
+[full changelog](https://github.com/sue445/jenkins-backup-script/compare/0.1.7...0.1.8)
+
+* Fix making directories on Windows with busybox-w32
+  * https://github.com/sue445/jenkins-backup-script/pull/45
+
+## 0.1.7
+[full changelog](https://github.com/sue445/jenkins-backup-script/compare/0.1.6...0.1.7)
+
+* Fix: Backup script was failing when projects have folders with spaces
+  * https://github.com/sue445/jenkins-backup-script/pull/44
+
+## 0.1.6
+[full changelog](https://github.com/sue445/jenkins-backup-script/compare/0.1.5...0.1.6)
+
+* Fix handling jobs with whitespace in name
+  * https://github.com/sue445/jenkins-backup-script/pull/40
+
+## 0.1.5
+[full changelog](https://github.com/sue445/jenkins-backup-script/compare/0.1.4...0.1.5)
+
+* Add support for CloudBees Folder plugin
+  * https://github.com/sue445/jenkins-backup-script/pull/39
+
+## 0.1.4
+[full changelog](https://github.com/sue445/jenkins-backup-script/compare/0.1.3...0.1.4)
+
+* Fix error when nodes dir is empty
+  * https://github.com/sue445/jenkins-backup-script/issues/37
+  * https://github.com/sue445/jenkins-backup-script/pull/38
 
 ## 0.1.3
 [full changelog](https://github.com/sue445/jenkins-backup-script/compare/0.1.2...0.1.3)

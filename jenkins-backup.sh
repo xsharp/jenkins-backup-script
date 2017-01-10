@@ -20,7 +20,9 @@ if [ -z "$JENKINS_HOME" -o -z "$DEST_FILE" ] ; then
 fi
 
 rm -rf "$ARC_DIR" "$TMP_TAR_NAME"
-mkdir -p "$ARC_DIR/"{plugins,jobs,users,secrets,nodes}
+for i in plugins jobs users secrets nodes;do
+  mkdir -p "$ARC_DIR"/$i
+done
 
 cp "$JENKINS_HOME/"*.xml "$ARC_DIR"
 
@@ -31,25 +33,41 @@ if [ $hpi_pinned_count -ne 0 -o $jpi_pinned_count -ne 0 ]; then
   cp "$JENKINS_HOME/plugins/"*.[hj]pi.pinned "$ARC_DIR/plugins"
 fi
 
-if [ -d "$JENKINS_HOME/users/" ] ; then
+if [ "$(ls -A $JENKINS_HOME/users/)" ]; then
   cp -R "$JENKINS_HOME/users/"* "$ARC_DIR/users"
 fi
 
-if [ -d "$JENKINS_HOME/secrets/" ] ; then
+if [ "$(ls -A $JENKINS_HOME/secrets/)" ] ; then
   cp -R "$JENKINS_HOME/secrets/"* "$ARC_DIR/secrets"
 fi
 
-if [ -d "$JENKINS_HOME/nodes/" ] ; then
-  cp -R "$JENKINS_HOME/nodes/". "$ARC_DIR/nodes"
+if [ "$(ls -A $JENKINS_HOME/nodes/)" ] ; then
+  cp -R "$JENKINS_HOME/nodes/"* "$ARC_DIR/nodes"
 fi
 
-if [ -d "$JENKINS_HOME/jobs/" ] ; then
-  cd "$JENKINS_HOME/jobs/"
-  ls -1 | while read job_name ; do
-    mkdir -p "$ARC_DIR/jobs/$job_name/"
-    find "$JENKINS_HOME/jobs/$job_name/" -maxdepth 1 -name "*.xml" | xargs -I {} cp {} "$ARC_DIR/jobs/$job_name/"
+function backup_jobs {
+  local run_in_path=$1
+  local rel_depth=${run_in_path#$JENKINS_HOME/jobs/}
+  cd "$run_in_path"
+  find . -maxdepth 1 -type d | while read job_name ; do
+    [ "$job_name" = "." ] && continue
+    [ "$job_name" = ".." ] && continue
+    [ -d "$JENKINS_HOME/jobs/$rel_depth/$job_name" ] && mkdir -p "$ARC_DIR/jobs/$rel_depth/$job_name/"
+    find "$JENKINS_HOME/jobs/$rel_depth/$job_name/" -maxdepth 1 -name "*.xml" -print0 | xargs -0 -I {} cp {} "$ARC_DIR/jobs/$rel_depth/$job_name/"
+    if [ -f "$JENKINS_HOME/jobs/$rel_depth/$job_name/config.xml" ] && [ "$(grep -c "com.cloudbees.hudson.plugins.folder.Folder" "$JENKINS_HOME/jobs/$rel_depth/$job_name/config.xml")" -ge 1 ] ; then
+      #echo "Folder! $JENKINS_HOME/jobs/$rel_depth/$job_name/jobs"
+      backup_jobs "$JENKINS_HOME/jobs/$rel_depth/$job_name/jobs"
+    else
+      true
+      #echo "Job! $JENKINS_HOME/jobs/$rel_depth/$job_name"
+    fi 
   done
+  #echo "Done in $(pwd)"
   cd -
+}
+
+if [ "$(ls -A $JENKINS_HOME/jobs/)" ] ; then
+  backup_jobs $JENKINS_HOME/jobs/
 fi
 
 cd "$TMP_DIR"
